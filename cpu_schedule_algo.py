@@ -17,7 +17,7 @@ print(" f. Feedback (FB)")
 
 algorthm = input("Select a scheduling algorithm (a-f): ")
 
-"""
+
 processes = [] #list of processes
 while True:
     #input process information
@@ -37,14 +37,16 @@ while True:
         'processing_time': processing_time
     })
 
+
+
 """
-
-
 processes = [] #list of processes
 processes.append({'name': 'A', 'arrival_time': 0, 'processing_time': 1})
 processes.append({'name': 'B', 'arrival_time': 1, 'processing_time': 9})
 processes.append({'name': 'C', 'arrival_time': 2, 'processing_time': 1})
 processes.append({'name': 'D', 'arrival_time': 3, 'processing_time': 9})
+
+"""
 
 
 def fcfs(processes):
@@ -187,43 +189,52 @@ def hrrn(processes):
 
     return scheduled
 
-def fb(processes,q):
+def fb(processes, q):
     scheduled = [] #list of scheduled processes (output)
     current_time = 0
-    queue = []
+    queue1 = []
+    queue2 = []
+    queue3 = []
 
-    while processes:
-        for process in processes:
-            if process['arrival_time'] <= current_time and process not in queue:
-                queue.append(process)
-        if queue:
-            process = queue.pop(0)
+    fcfs(processes) 
+    for process in processes:
+        process['remaining_time'] = process['processing_time']
+        queue1.append(process)
 
-            time_slice = min(q, process['processing_time'])
-            for _ in range(time_slice):
-                scheduled.append({'name': process['name']})
-                current_time += 1
-                process['processing_time'] -= 1
+    while queue1 or queue2 or queue3:
+        if queue1:
+            current_process = queue1.pop(0)
+            time_slice = min(q, current_process["remaining_time"])
+        elif queue2:
+            current_process = queue2.pop(0)
+            time_slice = min(q, current_process["remaining_time"])
+        elif queue3:
+            current_process = queue3.pop(0) 
+            time_slice = min(q, current_process["remaining_time"])
 
-                #check arrivals during execution
-                for p in processes:
-                    if p['arrival_time'] <= current_time and p not in queue and p != process:
-                        queue.append(p)
 
-            if process['processing_time'] > 0:
-                queue.append(process)
-            else:
-                processes.remove(process)
-        else:
+
+
+        for _ in range(time_slice):
+            scheduled.append({'name': current_process["name"]})
             current_time += 1
+            current_process["remaining_time"] -= 1
+
+        if current_process["remaining_time"] > 0:
+            if current_process in queue1:
+                queue2.append(current_process) 
+            elif current_process in queue2:
+                queue3.append(current_process) 
+            else:
+                queue3.append(current_process)
 
     return scheduled
-
 
 ##############################################################################
 
 if algorthm == 'a':
     print("You selected First Come First Served (FCFS)")
+    print("Process execution order:")
     output = fcfs(processes)
     for o in output:
         print(o['name'])
@@ -231,24 +242,28 @@ if algorthm == 'a':
 elif algorthm == 'b':
     print("You selected Round Robin (RR)")
     q = int(input("Enter time quantum: "))
+    print("Process execution order:")
     output = rr(processes, q)
     for o in output:
         print(o['name'])
 
 elif algorthm == 'c':
     print("You selected Shortest Process Next (SPN)")
+    print("Process execution order:")
     output = spn(processes)
     for o in output:
         print(o['name'])
 
 elif algorthm == 'd':
     print("You selected Shortest Remaining Time (SRT)")
+    print("Process execution order:")
     output = srt(processes)
     for o in output:
         print(o['name'])
 
 elif algorthm == 'e':
     print("You selected Highest Response Ratio Next (HRRN)")
+    print("Process execution order:")
     output = hrrn(processes)
     for o in output:
         print(o['name'])
@@ -256,6 +271,7 @@ elif algorthm == 'e':
 elif algorthm == 'f':
     print("You selected Feedback (FB)")
     q = int(input("Enter time quantum: "))
+    print("Process execution order:")
     output = fb(processes, q)
     for o in output:
         print(o['name'])
