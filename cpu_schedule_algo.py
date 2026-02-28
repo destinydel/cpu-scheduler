@@ -45,8 +45,8 @@ processes.append({'name': 'A', 'arrival_time': 0, 'processing_time': 1})
 processes.append({'name': 'B', 'arrival_time': 1, 'processing_time': 9})
 processes.append({'name': 'C', 'arrival_time': 2, 'processing_time': 1})
 processes.append({'name': 'D', 'arrival_time': 3, 'processing_time': 9})
-
 """
+
 
 
 def fcfs(processes):
